@@ -2,27 +2,32 @@ package com.uvsl.urlShortener.entities;
 
 import jakarta.persistence.*;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name="links")
-public class Link {
+public class Url implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String longUrl;
     private String shortUrl;
-    private LocalDateTime createdIn;
+    private LocalDateTime createdAt;
 
-    public Link() {
+    public Url() {
     }
 
-    public Link(Long id, String longUrl, String shortUrl, LocalDateTime createdIn) {
+    public Url(Long id, String longUrl, String shortUrl, LocalDateTime createdAt) {
         this.id = id;
         this.longUrl = longUrl;
         this.shortUrl = shortUrl;
-        this.createdIn = createdIn;
+        this.createdAt = createdAt;
     }
 
     public Long getId() {
@@ -45,11 +50,11 @@ public class Link {
         this.shortUrl = shortUrl;
     }
 
-    public LocalDateTime getCreatedIn() {
-        return createdIn;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreatedIn(LocalDateTime createdIn) {
-        this.createdIn = createdIn;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

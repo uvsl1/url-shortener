@@ -1,11 +1,10 @@
 package com.uvsl.urlShortener.repositories;
 
-import com.uvsl.urlShortener.entities.Link;
+import com.uvsl.urlShortener.entities.Url;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface LinkRepository extends JpaRepository <Link, Long> {
-
-    Link findByLongUrl(String shortUrl);
+public interface UrlRepository extends JpaRepository<Url, Long> {
+    Url findByShortUrl(String shortUrl);
 }
