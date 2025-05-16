@@ -20,10 +20,12 @@ public class UrlController {
     @PostMapping("/shorter")
     public ResponseEntity<Url> generateShortUrl(@RequestBody Map<String, String> request) {
         String originalUrl = request.get("originalUrl");
-        Url url = service.shortenUrl(originalUrl);
+        Integer durationDays = request.containsKey("durationDays") ?
+                Integer.valueOf(request.get("durationDays")) : null;
+        Url url = service.shortenUrl(originalUrl, durationDays);
         String generateUserRedirectUrl = "http://localhost:8080/" + url.getShortUrl();
 
-        Url response = new Url(url.getId(), url.getLongUrl(), generateUserRedirectUrl, url.getCreatedAt());
+        Url response = new Url(url.getId(), url.getLongUrl(), generateUserRedirectUrl, url.getCreatedAt(), url.getDurationDays());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -31,10 +33,16 @@ public class UrlController {
     public void redirectLink(@PathVariable String shortUrl, HttpServletResponse response) throws IOException {
         Url url = service.getOriginalUrl(shortUrl);
 
-        if (url != null) {
-            response.sendRedirect(url.getLongUrl());
-        } else {
+        if (url == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
         }
+        if (url.isExpired()) {
+            response.sendError(HttpServletResponse.SC_GONE, "URL expired");
+            return;
+        }
+
+        response.sendRedirect(url.getLongUrl());;
+
     }
 }

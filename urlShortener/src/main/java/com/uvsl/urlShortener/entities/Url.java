@@ -19,15 +19,26 @@ public class Url implements Serializable {
     private String longUrl;
     private String shortUrl;
     private LocalDateTime createdAt;
+    private int durationDays;
 
     public Url() {
     }
 
-    public Url(Long id, String longUrl, String shortUrl, LocalDateTime createdAt) {
+    public Url(Long id, String longUrl, String shortUrl, LocalDateTime createdAt, int durationDays) {
         this.id = id;
         this.longUrl = longUrl;
         this.shortUrl = shortUrl;
         this.createdAt = createdAt;
+        this.durationDays = durationDays;
+    }
+
+    public Url(String longUrl, int durationDays) {
+        this.longUrl = longUrl;
+        this.durationDays = durationDays;
+    }
+
+    public boolean isExpired() {
+        return createdAt.plusDays(durationDays).isBefore(LocalDateTime.now());
     }
 
     public Long getId() {
@@ -56,5 +67,13 @@ public class Url implements Serializable {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public int getDurationDays() {
+        return durationDays;
+    }
+
+    public void setDurationDays(int durationDays) {
+        this.durationDays = durationDays;
     }
 }

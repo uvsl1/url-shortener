@@ -1,6 +1,8 @@
 package com.uvsl.urlShortener.services;
 
 import com.uvsl.urlShortener.entities.Url;
+import com.uvsl.urlShortener.exceptions.GreaterThanExpectedException;
+import com.uvsl.urlShortener.exceptions.RestErrorMessage;
 import com.uvsl.urlShortener.repositories.UrlRepository;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +19,11 @@ public class UrlService {
     private UrlRepository urlRepository;
 
     public String generateRandomUrl() {
-        int length = ThreadLocalRandom.current().nextInt(5, 11);
+        int length = ThreadLocalRandom.current().nextInt(5, 10);
         return RandomStringUtils.randomAlphanumeric(length);
     }
 
-    public Url shortenUrl(String originalUrl) {
+    public Url shortenUrl(String originalUrl, Integer durationDays) {
         Optional<Url> existingUrl = urlRepository.findByLongUrl(originalUrl);
 
         if (existingUrl.isPresent()) {
@@ -32,6 +34,10 @@ public class UrlService {
         url.setLongUrl(originalUrl);
         url.setShortUrl(generateRandomUrl());
         url.setCreatedAt(LocalDateTime.now());
+        if (durationDays != null && durationDays > 90) {
+            throw new GreaterThanExpectedException(RestErrorMessage.EXPIRATION_LIMIT_EXCEEDED);
+        }
+        url.setDurationDays(durationDays != null ? durationDays : 7);
         return urlRepository.save(url);
     }
 
